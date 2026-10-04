@@ -1,4 +1,4 @@
-name: macOS Remote Desktop
+name: macOS Remote Terminal
 
 on: workflow_dispatch
 
@@ -6,25 +6,7 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-    - name: Configure Screen Sharing
-      run: |
-        # Enable Remote Management using the built-in system administrator tool
-        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart \
-          -activate \
-          -configure -access -on \
-          -privs -all \
-          -clientopts -setvncpasswd -vncpasswd "Password123" \
-          -restart -agent
-        
-    - name: Start ngrok Tunnel
-      env:
-        NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
-      run: |
-        # Install ngrok using Homebrew
-        brew install --cask ngrok
-        
-        # Add the authentication token
-        ngrok config add-authtoken $NGROK_AUTHTOKEN
-        
-        # Start a TCP tunnel on the system's VNC port
-        ngrok tcp 5900
+    - name: Start Interactive Termius Tunnel
+      uses: mxschmitt/action-tmate@v3
+      with:
+        limit-access-to-actor: false
