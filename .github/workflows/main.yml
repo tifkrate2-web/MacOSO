@@ -6,7 +6,11 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-    - name: Start Interactive Termius Tunnel
-      uses: mxschmitt/action-tmate@v3
-      with:
-        limit-access-to-actor: false
+    - name: Launch Fast Termius Tunnel
+      run: |
+        # Install tmate directly via Homebrew
+        brew install tmate
+        
+        # Start tmate in foreground mode to instantly generate the keys
+        tmate -F
+        
