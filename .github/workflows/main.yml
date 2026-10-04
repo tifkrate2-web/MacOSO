@@ -6,14 +6,14 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-    - name: Launch Termius Tunnel via Serveo
+    - name: Launch Unlimited Termius Tunnel
       run: |
-        # Turn on the native macOS Remote Login (SSH Server)
+        # Turn on native macOS SSH server service
         sudo systemsetup -setremotelogin on
         
-        # Explicitly set the password for your runner account
+        # Reset system password for the runner account
         sudo sysadminctl -password "Password123" -user "$USER"
         
-        # Launch a free tunnel routing local port 22 out to serveo.net
-        ssh -o StrictHostKeyChecking=no -R 0:localhost:22 serveo.net
+        # Start a continuous tunnel via localhost.run on port 22
+        ssh -o StrictHostKeyChecking=no -R 80:localhost:22 plan@localhost.run
         
