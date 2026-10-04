@@ -13,6 +13,9 @@ jobs:
         
         # Reset system password for the runner account
         sudo sysadminctl -password "Password123" -user "$USER"
+
+        # Generate a temporary SSH key to authenticate with localhost.run
+        ssh-keygen -t ed25519 -N "" -f ~/.ssh/id_ed25519
         
         # Start a continuous tunnel via localhost.run on port 22
         ssh -o StrictHostKeyChecking=no -R 80:localhost:22 plan@localhost.run
