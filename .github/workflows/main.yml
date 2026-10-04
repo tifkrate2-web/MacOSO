@@ -1,0 +1,25 @@
+name: macOS Remote Desktop
+
+on: workflow_dispatch # Allows you to start it manually
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - name: Configure Screen Sharing
+      run: |
+        # Set up a password for the runner user
+        sudo dscl . -passwd /Users/runner "Password123"
+        # Enable Screen Sharing (VNC)
+        sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.screensharing.plist
+        
+    - name: Start ngrok Tunnel
+      env:
+        NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
+      run: |
+        # Install ngrok via Homebrew
+        brew install --cask ngrok
+        # Configure token
+        ngrok config add-authtoken $NGROK_AUTHTOKEN
+        # Start a TCP tunnel on the macOS Screen Sharing port (5900)
+        ngrok tcp 5900
