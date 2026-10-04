@@ -1,4 +1,4 @@
-name: macOS Remote Terminal (Tmate)
+name: macOS Remote Terminal (Termius)
 
 on: workflow_dispatch
 
@@ -6,18 +6,14 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-    - name: Fix Network DNS & Launch Tmate
+    - name: Launch Termius Tunnel via Serveo
       run: |
-        # Dynamically find the active network interface and switch it to Google DNS
-        INTERFACE=$(networksetup -listallnetworkservices | grep -v '*' | head -n 1)
-        sudo networksetup -setdnsservers "$INTERFACE" 8.8.8.8 8.8.4.4
+        # Turn on the native macOS Remote Login (SSH Server)
+        sudo systemsetup -setremotelogin on
         
-        # Flush the system DNS cache to apply changes immediately
-        sudo killall -HUP mDNSResponder
+        # Explicitly set the password for your runner account
+        sudo sysadminctl -password "Password123" -user "$USER"
         
-        # Install tmate natively
-        brew install tmate
-        
-        # Launch tmate to print your Termius connection keys
-        tmate -F
+        # Launch a free tunnel routing local port 22 out to serveo.net
+        ssh -o StrictHostKeyChecking=no -R 0:localhost:22 serveo.net
         
