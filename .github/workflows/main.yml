@@ -1,4 +1,4 @@
-name: macOS Remote Terminal
+name: macOS Remote Terminal (Tmate)
 
 on: workflow_dispatch
 
@@ -6,11 +6,18 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-    - name: Launch Fast Termius Tunnel
+    - name: Fix Network DNS & Launch Tmate
       run: |
-        # Install tmate directly via Homebrew
+        # Dynamically find the active network interface and switch it to Google DNS
+        INTERFACE=$(networksetup -listallnetworkservices | grep -v '*' | head -n 1)
+        sudo networksetup -setdnsservers "$INTERFACE" 8.8.8.8 8.8.4.4
+        
+        # Flush the system DNS cache to apply changes immediately
+        sudo killall -HUP mDNSResponder
+        
+        # Install tmate natively
         brew install tmate
         
-        # Start tmate in foreground mode to instantly generate the keys
+        # Launch tmate to print your Termius connection keys
         tmate -F
         
