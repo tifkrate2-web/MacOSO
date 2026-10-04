@@ -8,11 +8,13 @@ jobs:
     steps:
     - name: Configure Screen Sharing
       run: |
-        # Use sysadminctl to securely set the password for the current runner user
-        sudo sysadminctl -password "Password123" -user "$USER"
-        
-        # Turn on Screen Sharing / VNC service
-        sudo launchctl kickstart -k system/com.apple.screensharing
+        # Enable Remote Management using the built-in system administrator tool
+        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart \
+          -activate \
+          -configure -access -on \
+          -privs -all \
+          -clientopts -setvncpasswd -vncpasswd "Password123" \
+          -restart -agent
         
     - name: Start ngrok Tunnel
       env:
@@ -24,5 +26,5 @@ jobs:
         # Add the authentication token
         ngrok config add-authtoken $NGROK_AUTHTOKEN
         
-        # Start a TCP tunnel on the standard macOS Screen Sharing port
+        # Start a TCP tunnel on the system's VNC port
         ngrok tcp 5900
